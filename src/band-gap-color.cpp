@@ -60,7 +60,7 @@ int main() {
 	// std::cout << "(" << s_out.r * 255 << ", " << s_out.g * 255 << ", " << s_out.b * 255 << ")\n";
 	std::string out_text;
 	out_text.reserve(128);
-	for (double i = 1.85; i < 3.0; i += 0.006125) {
+	for (double i = 1.60; i < 3.5; i += 0.006125) {
 		out_text.clear();
 		Simple_Gap_Function sg{i};
 		XYZ output = emitted_color(d65_spectrum, sg);
