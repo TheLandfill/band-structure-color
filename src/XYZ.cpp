@@ -39,7 +39,7 @@ XYZ emitted_color(N_func N, XYZ_func xyz) {
     XYZ output = simpson_rule(xyz, spectrum, full_spectrum_sum);
     output *= 1.0 / n;
     //output *= 1.0 / (output.x + output.y + output.z);
-    std::cout << output.x << ", " << output.y << ", " << output.z << ":\t";
+    // std::cout << output.x << ", " << output.y << ", " << output.z << ":\t";
     //output *= 1.0 / output.y;
     return output;
 }

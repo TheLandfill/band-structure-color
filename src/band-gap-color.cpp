@@ -34,7 +34,7 @@ public:
 	Simple_Gap_Function(double energy) : min_energy(energy) {}
 	void operator()(XYZ& out, double wavelength) {
 		using namespace si_constants;
-		if ((h * c / wavelength) <= min_energy * eV) {
+		if ((h * c / wavelength) >= min_energy * eV) {
 			out = { 0., 0., 0. };
 		} else {
 			out = d65_rel_intensity(wavelength) * xyz_from_wavelength(wavelength);
@@ -60,7 +60,11 @@ int main() {
 	// std::cout << "(" << s_out.r * 255 << ", " << s_out.g * 255 << ", " << s_out.b * 255 << ")\n";
 	std::string out_text;
 	out_text.reserve(128);
-	for (double i = 1.60; i < 3.5; i += 0.006125) {
+	const double start = 1.625;
+	const double end = 3.25;
+	const double num_steps = 128.0;
+	const double step_size = (end - start) / num_steps;
+	for (double i = start; i <= end; i += step_size) {
 		out_text.clear();
 		Simple_Gap_Function sg{i};
 		XYZ output = emitted_color(d65_spectrum, sg);
