@@ -7,12 +7,16 @@
 #include <string>
 #include <iostream>
 
-class Simple_Gap_Function {
+class Small_Color_Range {
 public:
-	Simple_Gap_Function(double energy) : min_energy(energy) {}
+	Small_Color_Range(double energy) :
+        min_energy((energy - 0.01) * si_constants::eV),
+        max_energy((energy + 0.01) * si_constants::eV)
+        {}
 	void operator()(XYZ& out, double wavelength) {
 		using namespace si_constants;
-		if ((h * c / wavelength) <= min_energy * eV) {
+        double energy = h * c / wavelength;
+		if (energy < min_energy || energy > max_energy) {
 			out = { 0., 0., 0. };
 		} else {
 			out = d65_rel_intensity(wavelength) * xyz_from_wavelength(wavelength);
@@ -20,43 +24,35 @@ public:
 	}
 private:
 	double min_energy;
+	double max_energy;
 };
 
-void print_color(const char * text, const RGB& color) {
-	int r = color.r * 255;
-	int g = color.g * 255;
-	int b = color.b * 255;
-	std::cout << "\x1b[38;2;" << r << ";" << g << ";" << b << "m";
-	std::cout << text;
-	std::cout << "\x1b[0m";
-}
 
 int main() {
 	const size_t num_rows = 2048;
 	const size_t num_cols = 256;
 	png::PNG out{num_cols, num_rows};
-	std::string out_text;
-	out_text.reserve(128);
 	const double start = 1.75;
 	const double end = 3.25;
 	const double num_steps = num_rows;
 	const double step_size = (end - start) / num_steps;
 	size_t cur_row = 0;
 	for (double i = start; i <= end; i += step_size) {
-		out_text.clear();
-		Simple_Gap_Function sg{i};
-		XYZ output = emitted_color(d65_spectrum, sg);
+		Small_Color_Range sc{i};
+		XYZ output = emitted_color(d65_spectrum, sc);
 		RGB s_out = sRGB_from_XYZ(output);
+        pixel_t out_color{0, 0, 0, 255};
+        out_color = {
+			(uint8_t)(255 * s_out.r), 
+			(uint8_t)(255 * s_out.g),
+			(uint8_t)(255 * s_out.b),
+			255
+        };
 		for (size_t cur_col = 0; cur_col < num_cols; cur_col++) {
-			out.at(cur_row, cur_col) = {
-				(uint8_t)(255 * s_out.r), 
-				(uint8_t)(255 * s_out.g),
-				(uint8_t)(255 * s_out.b),
-				255
-			};
+			out.at(cur_row, cur_col) = out_color;
 		}
 		cur_row++;
 	}
-	out.write_to_file("./reversed-band-gap.png");
+	out.write_to_file("./visible-spectrum.png");
 	return 0;
 }
