@@ -20,3 +20,6 @@ target_link_libraries(acceptor-color-2D color-from-absorption-spectrum)
 
 add_executable(visible-spectrum "${CMAKE_SOURCE_DIR}/src/visible-spectrum.cpp")
 target_link_libraries(visible-spectrum color-from-absorption-spectrum)
+
+add_executable(green "${CMAKE_SOURCE_DIR}/src/green.cpp")
+target_link_libraries(green color-from-absorption-spectrum)

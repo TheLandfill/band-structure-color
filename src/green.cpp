@@ -1,27 +1,40 @@
 #include "constants.hpp"
 #include "XYZ.hpp"
+#include "d65.h"
+#include <iostream>
 
-class Small_Color_Range {
-public:
-	Small_Color_Range(double energy) :
-        min_energy((energy - 7.0 / 32.0) * si_constants::eV),
-        max_energy((energy + 7.0 / 32.0) * si_constants::eV)
-        {}
-	void operator()(XYZ& out, double wavelength) {
-		using namespace si_constants;
-        double energy = h * c / wavelength;
-		if (energy < min_energy || energy > max_energy) {
-			out = { 0., 0., 0. };
-		} else {
-			out = d65_rel_intensity(wavelength) * xyz_from_wavelength(wavelength);
-		}
-	}
-private:
-	double min_energy;
-	double max_energy;
-};
+void green(XYZ& out, double wavelength) {
+    using namespace si_constants;
+    double energy = h * c / wavelength;
+    if ((energy >= 1.1 * eV && energy <= 2.1 * eV)
+        || (energy >= 2.5 * eV && energy <= 3.5 * eV)) {
+        out = { 0., 0., 0. };
+    } else {
+        out = d65_rel_intensity(wavelength) * xyz_from_wavelength(wavelength);
+    }
+}
+
+void print_color(const char * text, const RGB& color) {
+	int r = color.r * 255;
+	int g = color.g * 255;
+	int b = color.b * 255;
+	std::cout << "\x1b[38;2;" << r << ";" << g << ";" << b << "m";
+	std::cout << text;
+	std::cout << "\x1b[0m";
+}
 
 int main() {
-    
+    RGB out = sRGB_from_XYZ(emitted_color(d65_spectrum, green));
+    std::string out_color;
+    out_color.reserve(64);
+    out_color += "(";
+    out_color += std::to_string((int)(out.r * 255));
+    out_color += ", ";
+    out_color += std::to_string((int)(out.g * 255));
+    out_color += ", ";
+    out_color += std::to_string((int)(out.b * 255));
+    out_color += ")";
+    print_color(out_color.c_str(), out);
+    std::cout << "\n";
     return 0;
 }
