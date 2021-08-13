@@ -57,13 +57,16 @@ int main() {
     double start_b = -107.86368104495168;
     double start_C = sqrt(start_a * start_a + start_b * start_b);
     double start_h = atan2(start_b, start_a);
-    double stop_L = 66.853804382266;
-    double stop_a = 43.32394349110946;
-    double stop_b = 73.90977076096985;
+    double stop_L = 97.13824698129729;
+    double stop_a = -21.555908334832285;
+    double stop_b = 94.48248544644461;
     double stop_C = sqrt(stop_a * stop_a + stop_b * stop_b);
     double stop_h = atan2(stop_b, stop_a);
     LCh start{start_L, start_C, start_h};
     LCh stop{stop_L, stop_C, stop_h};
+    LCh swap_color = start;
+    start = stop;
+    stop = swap_color;
     full_print_color(start);
     full_print_color(stop);
     full_print_color({
@@ -74,22 +77,22 @@ int main() {
     double closest_theta = -M_PI;
     double closest_phi = -2.0 * M_PI;
     double closest_approach = 100.0;
-    const double theta_middle = 0.5;
-    const double theta_diff = 0.5;
-    const double phi_middle = 1.0;
-    const double phi_diff = 1.0;
+    const double theta_middle = 0.499136;
+    const double theta_diff = 0.5 / 5.0 / 5.0 / 5.0 / 5.0 / 5.0 / 5.0;
+    const double phi_middle = 0.889984;
+    const double phi_diff = 1.0 / 5.0 / 5.0 / 5.0 / 5.0 / 5.0 / 5.0;
     std::vector<LCh> closest_path;
-    for (double theta = theta_middle - theta_diff; theta <= theta_middle + theta_diff; theta += theta_diff / 5.0) {
+    for (double theta = theta_middle - theta_diff; theta <= theta_middle + theta_diff; theta += theta_diff / 10.0) {
         #pragma omp parallel for num_threads(11)
-        for (int phi_in = 0; phi_in < 11; phi_in++) {
-            double phi = phi_middle - phi_diff + (double)phi_in * phi_diff / 5.0;
+        for (int phi_in = 0; phi_in < 21; phi_in++) {
+            double phi = phi_middle - phi_diff + (double)phi_in * phi_diff / 10.0;
             auto out = out_color(
-                stop,
+                start,
                 sin(theta * M_PI) * cos(phi * M_PI),
                 sin(theta * M_PI) * sin(phi * M_PI),
                 cos(theta * M_PI),
                 0.0001,
-                600000
+                1600000
             );
             double min_sqr_mag = 100.0;
             for (size_t i = 0; i < out.size(); i++) {
@@ -99,7 +102,7 @@ int main() {
                 double sqr_mag = 0.0;
                 const std::array<double, 3> norm_factors{ 100.0, 100.0, 2 * M_PI };
                 for (size_t j = 0; j < 3; j++) {
-                    double diff = out[i][j] - start[j];
+                    double diff = out[i][j] - stop[j];
                     diff /= norm_factors[j];
                     diff *= diff;
                     sqr_mag += diff;
@@ -130,7 +133,7 @@ int main() {
         double sqr_mag = 0.0;
         std::array<double, 3> norm_factors{ 100.0, 100.0, 2 * M_PI };
         for (size_t j = 0; j < 3; j++) {
-            double diff = out[i][j] - start[j];
+            double diff = out[i][j] - stop[j];
             diff /= norm_factors[j];
             diff *= diff;
             sqr_mag += diff;
@@ -140,15 +143,15 @@ int main() {
             min_index = i;
         }
     }
-    //for (size_t i = 0; i < out.size(); i += 600) {
-    //    full_print_color(out[i]);
-    //}
-    //for (size_t i = 0; i < out.size(); i += 600) {
-    //    XYZ color = out[i].to_XYZ();
-    //    double norm = color.x + color.y + color.z;
-    //    color *= 1.0 / norm;
-    //    std::cout << color.x << "," << color.y << "\n";
-    //}
+    // for (size_t i = 0; i < out.size(); i += 4000) {
+    //     full_print_color(out[i]);
+    // }
+    // for (size_t i = 0; i < out.size(); i += 600) {
+    //     XYZ color = out[i].to_XYZ();
+    //     double norm = color.x + color.y + color.z;
+    //     color *= 1.0 / norm;
+    //     std::cout << color.x << "," << color.y << "\n";
+    // }
     std::cout << min_index << ": ";
     full_print_color(out[min_index]);
     std::cout << min_index / 2 << ": ";
