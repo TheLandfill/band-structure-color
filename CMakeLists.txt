@@ -23,3 +23,6 @@ target_link_libraries(visible-spectrum color-from-absorption-spectrum)
 
 add_executable(green "${CMAKE_SOURCE_DIR}/src/green.cpp")
 target_link_libraries(green color-from-absorption-spectrum)
+
+add_executable(color-geodesics "${CMAKE_SOURCE_DIR}/src/geodesic-color.cpp")
+target_link_libraries(color-geodesics color-from-absorption-spectrum)

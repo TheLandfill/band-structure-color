@@ -1,6 +1,7 @@
 #include "constants.hpp"
 #include "XYZ.hpp"
 #include "d65.h"
+#include "print-color.hpp"
 #include <iostream>
 
 void green(XYZ& out, double wavelength) {
@@ -12,15 +13,6 @@ void green(XYZ& out, double wavelength) {
     } else {
         out = d65_rel_intensity(wavelength) * xyz_from_wavelength(wavelength);
     }
-}
-
-void print_color(const char * text, const RGB& color) {
-	int r = color.r * 255;
-	int g = color.g * 255;
-	int b = color.b * 255;
-	std::cout << "\x1b[38;2;" << r << ";" << g << ";" << b << "m";
-	std::cout << text;
-	std::cout << "\x1b[0m";
 }
 
 int main() {

@@ -8,9 +8,10 @@ double exp_by_squaring(double x, int n) {
         if (n & 1) {
             x_prod *= x;
         }
-        n >> 1;
+        n >>= 1;
         x *= x;
     }
+    return x_prod;
 }
 
 void Color_Christoffel_Symbols::calculate(const LCh& lch) {
@@ -18,7 +19,7 @@ void Color_Christoffel_Symbols::calculate(const LCh& lch) {
     const double& C = lch.C;
     const double& h = lch.h;
     double C_to_the_7 = exp_by_squaring(C, 7);
-    double C7 = C_to_the_7 + (double)(25 * 25 * 25 * 25 * 25 * 25 * 25);
+    double C7 = C_to_the_7 + (double)(1808548329);
     double T = (
         -0.17 * sin(h + M_PI / 3.0)
         - 0.2 * sin(4.0 * h + 4.0 * M_PI / 15.0)

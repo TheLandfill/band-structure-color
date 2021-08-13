@@ -1,4 +1,5 @@
 #include "LCh.hpp"
+#include <stdexcept>
 #include <cmath>
 
 LCh::LCh(double luma, double chroma, double hue) : L(luma), C(chroma), h(hue) {}
@@ -21,7 +22,7 @@ double xyz_from_lab_f(double t) {
     }
 }
 
-XYZ LCh::to_XYZ() {
+XYZ LCh::to_XYZ() const {
     double a = C * cos(h);
     double b = C * sin(h);
     static const double d65_X_n = 95.0489 / 100.0;
@@ -33,4 +34,30 @@ XYZ LCh::to_XYZ() {
         d65_Y_n * xyz_from_lab_f(term_L),
         d65_Z_n * xyz_from_lab_f(term_L - b / 200.0)
     };
+}
+
+double& LCh::operator[](size_t i) {
+    switch(i) {
+    case 0:
+        return L;
+    case 1:
+        return C;
+    case 2:
+        return h;
+    default:
+        throw std::out_of_range("ERROR in LCh index\n");
+    }
+}
+
+double LCh::operator[](size_t i) const {
+    switch(i) {
+    case 0:
+        return L;
+    case 1:
+        return C;
+    case 2:
+        return h;
+    default:
+        throw std::out_of_range("ERROR in LCh index\n");
+    }
 }

@@ -4,7 +4,9 @@
 struct LCh {
 public:
     LCh(double luma, double chroma, double hue);
-    XYZ to_XYZ();
+    XYZ to_XYZ() const;
+    double& operator[](size_t i);
+    double operator[](size_t i) const;
 public:
     double L, C, h;
 };

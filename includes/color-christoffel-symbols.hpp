@@ -16,7 +16,7 @@ public:
         >,
         3
     > gamma;
-    static const double k_h = 1.0;
-    static const double k_C = 1.0;
-    static const double k_L = 1.0;
+    static constexpr double k_h = 1.0;
+    static constexpr double k_C = 1.0;
+    static constexpr double k_L = 1.0;
 };
