@@ -16,7 +16,7 @@ public:
         >,
         3
     > gamma;
-    static constexpr double k_h = 1.0;
+    static constexpr double k_h = 2.0;
     static constexpr double k_C = 1.0;
     static constexpr double k_L = 1.0;
 };

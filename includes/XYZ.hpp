@@ -16,3 +16,5 @@ void d65_spectrum(double& out, double wavelength);
 void d65_spectrum(XYZ& out, double wavelength);
 
 RGB sRGB_from_XYZ(const XYZ& in);
+RGB adobe_wide_from_XYZ(const XYZ& in);
+XYZ XYZ_from_adobe_wide(RGB in);

@@ -76,3 +76,33 @@ RGB sRGB_from_XYZ(const XYZ& in) {
     out.b = std::clamp(out.b, 0.0, 1.0);
     return out;
 }
+
+RGB adobe_wide_from_XYZ(const XYZ& in) {
+    RGB out {
+         1.4628067 * in.x - 0.1840623 * in.y - 0.2743606 * in.z,
+        -0.5217933 * in.x + 1.4472381 * in.y + 0.0677227 * in.z,
+         0.0349342 * in.x - 0.0968930 * in.y + 1.2884099 * in.z
+    };
+    out.r = std::clamp(out.r, 0.0, 1.0);
+    out.g = std::clamp(out.g, 0.0, 1.0);
+    out.b = std::clamp(out.b, 0.0, 1.0);
+    out.r = pow(out.r, 1.0 / 2.19921875);
+    out.g = pow(out.g, 1.0 / 2.19921875);
+    out.b = pow(out.b, 1.0 / 2.19921875);
+    out.r = std::clamp(out.r, 0.0, 1.0);
+    out.g = std::clamp(out.g, 0.0, 1.0);
+    out.b = std::clamp(out.b, 0.0, 1.0);
+    return out;
+}
+
+XYZ XYZ_from_adobe_wide(RGB in) {
+    in.r = pow(in.r, 2.19921875);
+    in.g = pow(in.g, 2.19921875);
+    in.b = pow(in.b, 2.19921875);
+    XYZ out = {
+        0.7161046 * in.r + 0.1009296 * in.g + 0.1471858 * in.b,
+        0.2581874 * in.r + 0.7249378 * in.g + 0.0168748 * in.b,
+        0.0000000 * in.r + 0.0517813 * in.g + 0.7734287 * in.b
+    };
+    return out;
+}

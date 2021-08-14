@@ -4,6 +4,22 @@
 
 LCh::LCh(double luma, double chroma, double hue) : L(luma), C(chroma), h(hue) {}
 
+double lab_from_xyz_f(double t);
+
+LCh::LCh(XYZ in) {
+    static const double d65_X_n = 95.0489 / 100.0;
+    static const double d65_Y_n = 100.0 / 100.0;
+    static const double d65_Z_n = 108.8840 / 100.0;
+    double x_f = lab_from_xyz_f(in.x / d65_X_n);
+    double y_f = lab_from_xyz_f(in.y / d65_Y_n);
+    double z_f = lab_from_xyz_f(in.z / d65_Z_n);
+    L = 116.0 * y_f - 16.0;
+    double a = 500.0 * (x_f - y_f);
+    double b = 200.0 * (y_f - z_f);
+    C = sqrt(a * a + b * b);
+    h = atan2(b, a);
+}
+
 double lab_from_xyz_f(double t) {
     double delta = 6.0 / 29.0;
     if (t > delta * delta * delta) {
