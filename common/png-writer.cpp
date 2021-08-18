@@ -1,4 +1,5 @@
 #include "png-writer.hpp"
+#include <iostream>
 
 extern "C" {
     pixel_t * pixel_at(const bitmap_t * bitmap, int x, int y);
@@ -29,6 +30,7 @@ pixel_t PNG::at(size_t row, size_t col) const {
 }
 
 int PNG::write_to_file(const char * path) {
+	std::cout << "Saving PNG to `" << path << "`\n";
     return save_png_to_file(&bits, path);
 }
 

@@ -1,18 +1,8 @@
 #include "LCh.hpp"
 #include "color-christoffel-symbols.hpp"
+#include "exp-by-squaring.hpp"
 #include <cmath>
-
-double exp_by_squaring(double x, int n) {
-    double x_prod = 1.0;
-    while (n != 0) {
-        if (n & 1) {
-            x_prod *= x;
-        }
-        n >>= 1;
-        x *= x;
-    }
-    return x_prod;
-}
+#include <stdexcept>
 
 void Color_Christoffel_Symbols::calculate(const LCh& lch) {
     const double& L = lch.L;
@@ -32,12 +22,11 @@ void Color_Christoffel_Symbols::calculate(const LCh& lch) {
         - 0.8 * cos(4 * h + 3.0 * M_PI / 20.0)
     );
 
-    double C_to_the_7 = exp_by_squaring(C, 7);
-    double twenty_five_to_7 = 1808548329;
-    double C7 = C_to_the_7 + twenty_five_to_7;
+    double C_to_the_7 = exp_by_squaring(C / 25.0, 7);
+    double C7 = C_to_the_7 + 1.0;
 
     double R_C = 2.0 * sqrt(C_to_the_7 / C7);
-    double dR_C = R_C * (7.0 / 2.0) / (C * (C_to_the_7 / twenty_five_to_7 + 1.0));
+    double dR_C = R_C * (7.0 / 2.0) / (C * (C7));
 
     double S_C = 1.0 + 0.045 * C;
     double dS_C = 0.045;
@@ -121,7 +110,7 @@ void Color_Christoffel_Symbols::calculate(const LCh& lch) {
         - 2.0 * k_C * R_T * S_C * S_H
     ) / (
         k_h * common * S_H * S_H
-    ); 
+    );
 
     // All of these are zero
 
@@ -138,16 +127,25 @@ void Color_Christoffel_Symbols::calculate(const LCh& lch) {
     // 5 for [1][a][b] where a b == 0
     // 22
     = gamma[1][0][0]
-    = gamma[1][0][1] 
-    = gamma[1][0][2] 
-    = gamma[1][1][0] 
-    = gamma[1][2][0] 
+    = gamma[1][0][1]
+    = gamma[1][0][2]
+    = gamma[1][1][0]
+    = gamma[1][2][0]
     // 5 for [1][a][b] where a b == 0
     // 27
-    = gamma[2][0][0] 
-    = gamma[2][0][1] 
-    = gamma[2][0][2] 
-    = gamma[2][1][0] 
+    = gamma[2][0][0]
+    = gamma[2][0][1]
+    = gamma[2][0][2]
+    = gamma[2][1][0]
     = gamma[2][2][0]
     = 0.0;
+    for (size_t i = 0; i < 3; i++) {
+        for (size_t j = 0; j < 3; j++) {
+            for (size_t k = 0; k < 3; k++) {
+                if (std::isnan(gamma[i][j][k])) {
+                    throw std::runtime_error("Oops. Open this in a debugger.");
+                }
+            }
+        }
+    }
 }

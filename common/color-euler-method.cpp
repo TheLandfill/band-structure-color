@@ -6,7 +6,46 @@
 #include <cmath>
 #include <array>
 
+class RunningStat {
+public:
+    RunningStat() : m_n(0) {}
+    void Clear() {
+        m_n = 0;
+    }
+    void Push(double x) {
+        m_n++;
+        // See Knuth TAOCP vol 2, 3rd edition, page 232
+        if (m_n == 1) {
+            m_oldM = m_newM = x;
+            m_oldS = 0.0;
+        } else {
+            m_newM = m_oldM + (x - m_oldM)/m_n;
+            m_newS = m_oldS + (x - m_oldM)*(x - m_newM);
+
+            // set up for next iteration
+            m_oldM = m_newM; 
+            m_oldS = m_newS;
+        }
+    }
+    int NumDataValues() const {
+        return m_n;
+    }
+    double Mean() const {
+        return (m_n > 0) ? m_newM : 0.0;
+    }
+    double Variance() const {
+        return ( (m_n > 1) ? m_newS/(m_n - 1) : 0.0 );
+    }
+    double StandardDeviation() const {
+        return sqrt( Variance() );
+    }
+private:
+    int m_n;
+    double m_oldM, m_newM, m_oldS, m_newS;
+};
+
 std::vector<LCh> out_color(LCh start, double dL_0, double dC_0, double dh_0, double step, size_t num_elements) {
+    RunningStat tracker_L, tracker_C, tracker_h;
     Color_Christoffel_Symbols gamma;
     std::vector<LCh> out;
     out.reserve(num_elements);
@@ -44,6 +83,9 @@ std::vector<LCh> out_color(LCh start, double dL_0, double dC_0, double dh_0, dou
         for (auto& v : vel) {
             v /= norm;
         }
+        tracker_L.Push(vel[0]);
+        tracker_C.Push(vel[1]);
+        tracker_h.Push(vel[2]);
         for (size_t i = 0; i < 3; i++) {
             pos[i] += vel[i] * step;
         }

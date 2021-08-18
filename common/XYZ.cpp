@@ -62,6 +62,27 @@ void gamma_correction(double& d) {
     }
 }
 
+void reverse_gamma_correction(double& d) {
+	if (d <= 0.4045) {
+		d /= 12.92;
+	} else {
+		static const double a = 0.055;
+		d = pow((d + a) / (1.0 + a), 2.4);
+	}
+}
+
+XYZ XYZ_from_sRGB(const RGB& in) {
+	RGB copy = in;
+	reverse_gamma_correction(copy.r);
+	reverse_gamma_correction(copy.g);
+	reverse_gamma_correction(copy.b);
+	return {
+		0.4124 * copy.r + 0.3576 * copy.g + 0.1805 * copy.b,
+		0.2126 * copy.r + 0.7152 * copy.g + 0.0722 * copy.b,
+		0.0193 * copy.r + 0.1192 * copy.g + 0.9505 * copy.b
+	};
+}
+
 RGB sRGB_from_XYZ(const XYZ& in) {
     RGB out{
          3.2406 * in.x - 1.5372 * in.y - 0.4986 * in.z,

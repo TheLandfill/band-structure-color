@@ -1,5 +1,6 @@
 #pragma once
 #include "LCh.hpp"
+#include "color-difference-2000.hpp"
 #include <array>
 
 struct Color_Christoffel_Symbols {
@@ -16,7 +17,4 @@ public:
         >,
         3
     > gamma;
-    static constexpr double k_h = 2.0;
-    static constexpr double k_C = 1.0;
-    static constexpr double k_L = 1.0;
 };
